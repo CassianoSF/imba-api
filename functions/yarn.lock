@@ -1489,6 +1489,11 @@ ignore@^3.3.5:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
   integrity sha512-Pgs951kaMm5GXP7MOvxERINe3gsaVjUWFm+UZPSq9xYriQAksyhg0csnS0KXSNRD5NmNdapXEpjxG49+AKh/ug==
 
+imba@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/imba/-/imba-1.4.1.tgz#8ae39e5d64be1ecbe192edad31a8fb539434d38d"
+  integrity sha512-bNH8mqPxuyp7ju8GMf0gx7EIgTaBk0hq0m+jyAycCfnYEbE81CO8t3DWIvMZGqewFCzzKedd8Gk8dUs0YEO88w==
+
 imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
