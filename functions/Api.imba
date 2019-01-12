@@ -1,10 +1,15 @@
 const functions = require 'firebase-functions'
-import { GraphQLServer } from 'graphql-yoga'
 const session = require 'express-session'
 const bcrypt = require 'bcryptjs'
 const ms = require 'ms'
+const cors = require 'cors'
+const express = require 'express'
+const graphqlHTTP = require 'express-graphql'
+const buildSchema = require('graphql'):buildSchema
 
-const typeDefs = "
+var app = express()
+
+var schema = buildSchema "
   type Query \{
     isLogin: Boolean!
   }
@@ -13,56 +18,50 @@ const typeDefs = "
     signup(username: String!, pwd: String!): Boolean!
   }
 "
-const data = {}
 
-const resolvers =
-  Query:
-    isLogin: do |parent, args, ctx|
-      typeof ctx:session:user !== 'undefined'
+var data = {}
 
-  Mutation:
-    signup: do |parent,  args, ctx|
-      if (data[args:username])
-        throw Error.new('Another User with same username exists.')
+var root =
+  isLogin: do |args, ctx, parent, info|
+    typeof ctx:user !== 'undefined'
 
-      data[args:username] =
-        pwd: await bcrypt.hashSync(args:pwd, 10)
-      yes
+  signup: do |args, ctx, parent, info|
+    if (data[args:username])
+      throw Error.new('Another User with same username exists.')
 
-    login: do |parent,  args, ctx|
-      const user = data[args:username]
-      throw Error.new('No Such User exists.') unless user
-      throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
-      ctx:session:user = user
-      yes
+    data[args:username] =
+      pwd: await bcrypt.hashSync(args:pwd, 10)
+    yes
 
-# opts
-const opts =
-  port: 4000
-  cors:
-    credentials: yes
-    origin: yes
+  login: do |args, ctx, parent, info|
+    const user = data[args:username]
+    throw Error.new('No Such User exists.') unless user
+    throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
+    # console.log(Object.keys(args))
+    # console.log(Object.keys(ctx))
+    # console.log(Object.keys(parent))
+    # console.log(Object.keys(info))
+    ctx:session = user
+    yes
 
-# server
-const server = GraphQLServer.new
-  typeDefs: typeDefs
-  resolvers: resolvers
-  context: do |req| req:request
+app.use cors()
 
+app.use '/', graphqlHTTP do |request|
+  schema: schema
+  rootValue: root
+  context: console.log(Object.keys(request)) and request:session
+  graphiql: true
 
-# session middleware
-server:express.use session
-  name: 'qid'
-  secret: "2y0181yb2ef8y13eb0f813yb13f234f2"
-  resave: yes
-  saveUninitialized: yes
+app.use session
+  name: 'qid',
+  secret: "H71aj12(Vasd&*!asc91usbd1*!!YSDC"
+  resave: true
+  saveUninitialized: true
   cookie:
-    secure: yes
+    secure: process:env:NODE_ENV === 'production'
     maxAge: ms('1d')
 
-# start development server
-# server.start opts, do 
-  # console.log("Server is running on http://localhost:{opts:port}")
 
-# export server to google firebase functions
-export const api = functions:https.onRequest(server:express)
+app.listen(3000)
+
+# export const api = functions:https.onRequest(app)
