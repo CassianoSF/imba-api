@@ -9,11 +9,15 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "firebase-admin": "~6.0.0",
     "firebase-functions": "^2.1.0",
-    "imba": "^1.4.1"
+    "graphql-yoga": "^1.16.9",
+    "imba": "^1.4.1",
+    "ms": "^2.1.1"
   },
   "private": true
 }
