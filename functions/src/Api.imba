@@ -1,3 +1,4 @@
+const admin = require 'firebase-admin'
 const functions = require 'firebase-functions'
 const session = require 'express-session'
 const bcrypt = require 'bcryptjs'
@@ -60,7 +61,5 @@ app.use '/', graphqlHTTP do |request|
   rootValue: root
   context: request:session
   graphiql: true
-
-# app.listen(3000)
 
 export const api = functions:https.onRequest(app)
