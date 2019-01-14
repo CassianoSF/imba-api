@@ -1,2 +1,2 @@
 require('imba')
-module.exports = require('./Api.imba')
+module.exports = require('./src/Api.imba')

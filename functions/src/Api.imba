@@ -16,16 +16,16 @@ var schema = buildSchema "
   type Mutation \{
     login(username: String!, pwd: String!): Boolean!
     signup(username: String!, pwd: String!): Boolean!
+    logout: Boolean!
   }
 "
-
 var data = {}
 
 var root =
-  isLogin: do |args, ctx, parent, info|
-    typeof ctx:user !== 'undefined'
+  isLogin: do |args, request|
+    typeof request:session:user !== 'undefined'
 
-  signup: do |args, ctx, parent, info|
+  signup: do |args, request|
     if (data[args:username])
       throw Error.new('Another User with same username exists.')
 
@@ -33,24 +33,18 @@ var root =
       pwd: await bcrypt.hashSync(args:pwd, 10)
     yes
 
-  login: do |args, ctx, parent, info|
+  login: do |args, request|
     const user = data[args:username]
     throw Error.new('No Such User exists.') unless user
     throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
-    # console.log(Object.keys(args))
-    # console.log(Object.keys(ctx))
-    # console.log(Object.keys(parent))
-    # console.log(Object.keys(info))
-    ctx:session = user
+    request:session:user = user
+    yes
+
+  logout: do |args, request|
+    request:session:user = undefined
     yes
 
 app.use cors()
-
-app.use '/', graphqlHTTP do |request|
-  schema: schema
-  rootValue: root
-  context: console.log(Object.keys(request)) and request:session
-  graphiql: true
 
 app.use session
   name: 'qid',
@@ -61,7 +55,12 @@ app.use session
     secure: process:env:NODE_ENV === 'production'
     maxAge: ms('1d')
 
+app.use '/', graphqlHTTP do |request|
+  schema: schema
+  rootValue: root
+  context: request:session
+  graphiql: true
 
-app.listen(3000)
+# app.listen(3000)
 
-# export const api = functions:https.onRequest(app)
+export const api = functions:https.onRequest(app)
