@@ -1,9 +1,6 @@
-require "firebase/firestore"
-const firebase = require "firebase"
+const admin = require 'firebase-admin'
+const functions = require 'firebase-functions'
 
-firebase.initializeApp
-  apiKey: "AIzaSyCZERwxLSlk7fYpLTGJlEBaLn9TaFB0eoQ"
-  authDomain: 'imba-dashboard.firebaseapp.com'
-  projectId: 'imba-dashboard'
+admin.initializeApp functions.config:firebase
 
-export var db = firebase.firestore()
+export var db = admin.firestore

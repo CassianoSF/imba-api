@@ -1,4 +1,4 @@
-const db = require('../db.imba')
+const db = require('../db'):db
 
 class RootRecord
 	prop id
