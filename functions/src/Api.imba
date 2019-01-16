@@ -7,17 +7,27 @@ const cors = require 'cors'
 const express = require 'express'
 const graphqlHTTP = require 'express-graphql'
 const buildSchema = require('graphql'):buildSchema
+import {User} from './models/User'
 
 var app = express()
 
 var schema = buildSchema "
   type Query \{
     isLogin: Boolean!
+    users: [User]
   }
+
   type Mutation \{
     login(username: String!, pwd: String!): Boolean!
     signup(username: String!, pwd: String!): Boolean!
     logout: Boolean!
+  }
+
+  type User \{
+    id: String!
+    email: String!
+    encrypted_password: String!
+    username: String!
   }
 "
 var data = {}
@@ -45,6 +55,9 @@ var root =
     request:session:user = undefined
     yes
 
+  users: do |args, request|
+    User.find_by({email: "Ada2"}) 
+
 app.use cors()
 
 app.use session
@@ -66,8 +79,14 @@ app.use '/', graphqlHTTP do |request|
 
 # def get db
 #   var snapshot = await db.collection('users').get()
+#   var result = []
 #   snapshot.forEach do |doc|
-#     console.log(doc:id, ':', doc.data())
+#     let rec = {}
+#     rec:id = doc:id
+#     let data = doc.data
+#     Object.keys(data).map do |col|
+#       rec[col] = data[col]
+#   console.log result
 
 # def set db
 #   var docRef = db.collection('users').doc('alovelace')

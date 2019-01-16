@@ -1,4 +1,20 @@
-const db = require('../db'):db
+import { db } from '../db'
+
+# var db = require('./db'):db
+
+# def get db
+#   var snapshot = await db.collection('users').get()
+#   snapshot.forEach do |doc|
+#     console.log(doc:id, ':', doc.data())
+
+# def set db
+#   var docRef = db.collection('users').doc('alovelace')
+
+#   var setAda = await docRef.set
+#     email: 'Ada2'
+#     encrypted_password: 'Lovelace2'
+#     username: "18152"
+#   console.log setAda
 
 class RootRecord
 	prop id
