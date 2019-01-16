@@ -1,5 +1,9 @@
-const RootRecord = require 'RootRecord.imba'
-export class User < RootRecord
-	prop username
-	prop encrypted_password
-	prop email
+import { db } from '../db.imba'
+
+export class User
+	attr username
+	attr encrypted_password
+	attr email
+
+	def self.all
+		await db.collection('users').get()
