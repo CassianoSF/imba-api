@@ -24,8 +24,7 @@ export class User
     def self.find_by args
         let column = Object.keys args
         let all = []
-        let snapshot = await db.collection('users').where(column, "==", args[column]).get()
-        console.log args
+        let snapshot = await db.collection('users').where("{column}", "==", args[column]).get()
         snapshot.forEach do |doc|
             all.push objectify(doc)
         return all
