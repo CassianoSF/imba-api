@@ -11,25 +11,25 @@ import {User} from './models/User'
 
 var app = express()
 
-var schema = buildSchema "
-  type Query \{
+var schema = buildSchema '
+  type Query {
     isLogin: Boolean!
     users: [User]
   }
 
-  type Mutation \{
+  type Mutation {
     login(username: String!, pwd: String!): Boolean!
     signup(username: String!, pwd: String!): Boolean!
     logout: Boolean!
   }
 
-  type User \{
+  type User {
     id: String!
     email: String!
     encrypted_password: String!
     username: String!
   }
-"
+'
 var data = {}
 
 var root =
