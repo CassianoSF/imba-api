@@ -3,15 +3,15 @@ import { db } from '../db'
 export class RootQuery
     prop query
 
-    def initialize collection_name, where, order, start, limit
+    def initialize collection_name, _where, _order, _skip, _limit
         query = db.collection(collection_name)
-        query = query.where(where) if where
-        query = query.orderBy(order) if order
-        query = query.startAt(start) if start
-        query = query.limit(limit) if limit
+        where(_where) if _where
+        order(_order) if _order
+        skip(_skip) if _skip
+        limit(_limit) if _limit
 
     def where cond
-        query = query.where(cond)
+        query = query.where(cond[0], cond[1], cond[2])
         self
 
     def order_by cond
@@ -28,12 +28,12 @@ export class RootQuery
 
     def first
         limit(1)
-        data[0]
+        (await data)[0]
 
     def last
         skip(count -1)
         limit(1)
-        data[0] 
+        await data[0] 
 
     def count
         let doc = await query.get()

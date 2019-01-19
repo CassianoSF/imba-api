@@ -1,4 +1,6 @@
-const User = require('../models/User')
+const bcrypt = require 'bcryptjs'
+
+import { User } from '../models/User'
 
 export class UserResolvers
 
@@ -6,15 +8,19 @@ export class UserResolvers
     typeof request:session:user !== 'undefined'
 
   def signup args, request
-    if User.find_by(username: args:username)
+    let log = await User.find_by("username", "==", args:username)
+    if (await User.find_by("username", "==", args:username))
       throw Error.new('Another User with same username exists.')
 
-    data[args:username] =
-      pwd: await bcrypt.hashSync(args:pwd, 10)
+    await User.new({
+      encrypted_password: (await bcrypt.hashSync(args:password, 10))
+      username: args:username
+      email: args:email
+    }).save
     yes
 
   def login args, request
-    const user = data[args:username]
+    const user = User.find_by("username", "==", args:username).data
     throw Error.new('No Such User exists.') unless user
     throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
     request:session:user = user

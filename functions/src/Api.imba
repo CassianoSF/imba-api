@@ -1,12 +1,13 @@
 const admin = require 'firebase-admin'
 const functions = require 'firebase-functions'
 const session = require 'express-session'
-const bcrypt = require 'bcryptjs'
 const ms = require 'ms'
 const cors = require 'cors'
 const express = require 'express'
 const graphqlHTTP = require 'express-graphql'
 const buildSchema = require('graphql'):buildSchema
+
+import {UserResolvers} from './resolvers/UserResolvers'
 import {User} from './models/User'
 
 var app = express()
@@ -18,8 +19,8 @@ var schema = buildSchema '
   }
 
   type Mutation {
-    login(username: String!, pwd: String!): Boolean!
-    signup(username: String!, pwd: String!): Boolean!
+    login(username: String!, password: String!): Boolean!
+    signup(username: String!, password: String!, email: String!): Boolean!
     logout: Boolean!
   }
 
@@ -34,30 +35,20 @@ var data = {}
 
 var root =
   isLogin: do |args, request|
-    typeof request:session:user !== 'undefined'
+    UserResolvers.new.isLogin args, request
 
   signup: do |args, request|
-    if (data[args:username])
-      throw Error.new('Another User with same username exists.')
-
-    data[args:username] =
-      pwd: await bcrypt.hashSync(args:pwd, 10)
-    yes
+    UserResolvers.new.signup args, request
 
   login: do |args, request|
-    const user = data[args:username]
-    throw Error.new('No Such User exists.') unless user
-    throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
-    request:session:user = user
-    yes
+    UserResolvers.new.login args, request
 
   logout: do |args, request|
-    request:session:user = undefined
-    yes
+    UserResolvers.new.logout args, request
 
-  users: do |args, request|
-    await User.all.data
-
+  users: do 
+    User.all.data
+  
 app.use cors()
 
 app.use session
@@ -74,31 +65,5 @@ app.use '/', graphqlHTTP do |request|
   rootValue: root
   context: request:session
   graphiql: true
-
-# var db = require('./db'):db
-
-# def get db
-#   var snapshot = await db.collection('users').get()
-#   var result = []
-#   snapshot.forEach do |doc|
-#     let rec = {}
-#     rec:id = doc:id
-#     let data = doc.data
-#     Object.keys(data).map do |col|
-#       rec[col] = data[col]
-#   console.log result
-
-# def set db
-#   var docRef = db.collection('users').doc('alovelace')
-
-#   var setAda = await docRef.set
-#     email: 'Ada2'
-#     encrypted_password: 'Lovelace2'
-#     username: "18152"
-#   console.log setAda
-
-
-# set(db)
-# get(db)
 
 export const api = functions:https.onRequest(app)
