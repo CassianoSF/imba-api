@@ -56,7 +56,7 @@ var root =
     yes
 
   users: do |args, request|
-    User.find_by({email: "Ada2"}) 
+    await User.all.data
 
 app.use cors()
 

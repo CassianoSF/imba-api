@@ -1,40 +1,57 @@
+const inflection = require 'inflection'
+
 import { db } from '../db'
+import { RootQuery } from './RootQuery'
 
-# var db = require('./db'):db
+export class RootRecord
+    prop collection_name
+    prop attributes
 
-# def get db
-#   var snapshot = await db.collection('users').get()
-#   snapshot.forEach do |doc|
-#     console.log(doc:id, ':', doc.data())
+    def self.where
+        RootQuery.new inflection.pluralize(inflection.underscore(self:name)), ($0)['0'], no, no, no
 
-# def set db
-#   var docRef = db.collection('users').doc('alovelace')
+    def self.all
+        RootQuery.new inflection.pluralize(inflection.underscore(self:name)), no, no, no, no
 
-#   var setAda = await docRef.set
-#     email: 'Ada2'
-#     encrypted_password: 'Lovelace2'
-#     username: "18152"
-#   console.log setAda
+    def self.first
+        RootQuery.new inflection.pluralize(inflection.underscore(self:name)), no, 'asc', 0, 1
 
-class RootRecord
-	prop id
-	prop model_name
-	prop columns
-	prop collection_name
+    def self.last
+        RootQuery.new inflection.pluralize(inflection.underscore(self:name)), no, 'desc', 0, 1
 
-	def self.all
-		await db.collection(collection_name)
+    def self.count
+        RootQuery.new(inflection.pluralize(inflection.underscore(self:name)), no, no, no, no).count
 
-	def self.create args
-		await db.collection(collection_name).add(args)
+    def self.find_by args
+        let column = Object.keys args
+        let all = []
+        RootQuery.new(inflection.pluralize(inflection.underscore(self:name)), ["{column}", "==", args[column]], no, no, no).first
 
-	def save
-		let args = columns.map do |c|
-			self[c]
-		db.collection(collection_name).add(args)
+    def save
+        await db.collection(inflection.pluralize(inflection.underscore(self:name))).add(self)
 
-	def delete
-		await db.collection(collection_name).doc(id).delete
+    def delete
+        await db.collection(inflection.pluralize(inflection.underscore(self:name))).doc(id).delete
 
-	def update args
-		await db.collection(collection_name).doc(id).update(args)
+    def update args
+        await db.collection(inflection.pluralize(inflection.underscore(self:name))).doc(id).update(args)
+
+
+    def initialize
+        let myName = RootRecord:caller.toString
+        myName = myName.substr 'function ':length
+        myName = myName.substr(0, myName.indexOf('('))
+        collection_name = inflection.pluralize(inflection.underscore(myName))
+        
+        let all_properties =  Object.getOwnPropertyNames(RootRecord:caller:prototype)
+        console.log all_properties
+        attributes = all_properties.slice(3,all_properties:length).filter do |prop, index|
+            index % 2 == 0
+
+        attributes.map do |attr|
+            self[attr] = null
+
+        let params = (($0)['0'])
+        if params
+            Object.keys(params).map do |p|
+                self[p] = params[p]
