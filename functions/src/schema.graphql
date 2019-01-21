@@ -1,0 +1,17 @@
+type Query {
+  isLogin: Boolean!
+  users: [User]
+}
+
+type Mutation {
+  login(username: String!, password: String!): Boolean!
+  signup(username: String!, password: String!, email: String!): Boolean!
+  logout: Boolean!
+}
+
+type User {
+  id: String!
+  email: String!
+  encrypted_password: String!
+  username: String!
+}

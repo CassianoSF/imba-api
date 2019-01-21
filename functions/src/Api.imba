@@ -1,3 +1,4 @@
+var fs = require 'fs'
 const admin = require 'firebase-admin'
 const functions = require 'firebase-functions'
 const session = require 'express-session'
@@ -11,26 +12,7 @@ import {UserResolvers} from './resolvers/UserResolvers'
 import {User} from './models/User'
 
 var app = express()
-
-var schema = buildSchema '
-  type Query {
-    isLogin: Boolean!
-    users: [User]
-  }
-
-  type Mutation {
-    login(username: String!, password: String!): Boolean!
-    signup(username: String!, password: String!, email: String!): Boolean!
-    logout: Boolean!
-  }
-
-  type User {
-    id: String!
-    email: String!
-    encrypted_password: String!
-    username: String!
-  }
-'
+var schema = buildSchema fs.readFileSync('./src/schema.graphql', 'utf8');
 
 var root =
   isLogin: do |args, request|

@@ -3,6 +3,9 @@ const inflection = require 'inflection'
 import { db } from '../db'
 import { RootQuery } from './RootQuery'
 
+export def test arg
+    console.log arg
+
 export class RootRecord
     prop id
     prop collection_name
