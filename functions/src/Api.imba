@@ -46,9 +46,6 @@ var root =
     UserResolvers.new.logout args, request
 
   users: do 
-    console.log '\n\n'
-    console.log (await User.all.data)
-    console.log '\n\n'
     User.all.data
 
 app.use cors()
