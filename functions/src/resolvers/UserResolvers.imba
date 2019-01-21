@@ -20,9 +20,12 @@ export class UserResolvers
     yes
 
   def login args, request
-    const user = User.find_by("username", "==", args:username).data
+    const user = await User.find_by("username", "==", args:username)
     throw Error.new('No Such User exists.') unless user
-    throw Error.new('Incorrect password.') unless await bcrypt.compareSync(args:pwd, user:pwd)
+    
+    unless(await bcrypt.compareSync(args:password, user:encrypted_password))
+      throw Error.new('Incorrect password.') 
+
     request:session:user = user
     yes
 

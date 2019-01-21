@@ -31,7 +31,6 @@ var schema = buildSchema '
     username: String!
   }
 '
-var data = {}
 
 var root =
   isLogin: do |args, request|
@@ -48,7 +47,7 @@ var root =
 
   users: do 
     User.all.data
-  
+
 app.use cors()
 
 app.use session
@@ -63,7 +62,7 @@ app.use session
 app.use '/', graphqlHTTP do |request|
   schema: schema
   rootValue: root
-  context: request:session
+  context: request
   graphiql: true
 
 export const api = functions:https.onRequest(app)
