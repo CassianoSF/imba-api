@@ -3,4 +3,8 @@ const functions = require 'firebase-functions'
 
 admin.initializeApp functions.config:firebase
 
-export var db = admin.firestore
+var db = admin.firestore
+
+db.settings({ timestampsInSnapshots: true });
+
+export var db = db

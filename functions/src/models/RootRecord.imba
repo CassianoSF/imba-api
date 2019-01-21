@@ -2,12 +2,27 @@ const inflection = require 'inflection'
 
 import { db } from '../db'
 import { RootQuery } from './RootQuery'
+    
 
 export class RootRecord
-    prop id
     prop collection_name
-    prop attributes
+    prop fields
+    prop errors
+    var fields
+    
 
+    def self.validates_presence_of
+        fields ?= {}
+        Object.values($0).map do |field|
+            fields[field] ?= {}
+            fields[field]:not_null = yes
+
+
+    def self.field field, type = :string
+        fields ?= {}
+        fields[field] ?= {}
+        fields[field]:type ?= type
+    
     def self.collection_name
         inflection.pluralize(inflection.underscore(self:name))
 
@@ -32,8 +47,12 @@ export class RootRecord
         return data
 
     def save
-        let thiz = {} 
-        attributes.map do |atr|
+        let thiz = {}
+
+        Object.keys(fields).map do |atr|
+            if fields[atr]:not_null and not self[atr]
+                errors ?= []
+                errors.push "{atr} can't be null."
             thiz[atr] = self[atr]
         
         await db.collection(collection_name).add(thiz)
@@ -51,14 +70,11 @@ export class RootRecord
         myName = myName.substr 'function ':length
         myName = myName.substr(0, myName.indexOf('('))
         collection_name = inflection.pluralize(inflection.underscore(myName))
-        
 
-        let all_properties =  Object.getOwnPropertyNames(RootRecord:caller:prototype)
-        attributes = all_properties.slice(3,all_properties:length).filter do |prop, index|
-            index % 2 == 0
-
-        attributes.map do |attr|
-            self[attr] = null
+        if fields
+            Object.keys(fields).map do |f|
+                self[f] = null
+            self:fields = fields
 
         let params = (($0)['0'])
         if params
