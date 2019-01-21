@@ -1,7 +1,8 @@
 import { RootRecord, test } from './RootRecord'
 
 export class User < RootRecord
-    attr username
-    attr encrypted_password
-    attr email
-    test :this
+	field :username,           :string
+	field :encrypted_password, :string
+	field :email,              :string
+
+	validates_presence_of :username, :encrypted_password, :email
