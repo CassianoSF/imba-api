@@ -12,7 +12,10 @@ import {UserResolvers} from './resolvers/UserResolvers'
 import {User} from './models/User'
 
 var app = express()
-var schema = buildSchema fs.readFileSync('./src/schema.graphql', 'utf8');
+console.log process.cwd
+console.log process.cwd
+console.log process.cwd
+var schema = buildSchema fs.readFileSync("{__dirname}/schema.graphql", 'utf8')
 
 var root =
   isLogin: do |args, request|
@@ -34,7 +37,7 @@ app.use cors()
 
 app.use session
   name: 'qid',
-  secret: "H71aj12(Vasd&*!asc91usbd1*!!YSDC"
+  secret: "my_terrible_secret"
   resave: true
   saveUninitialized: true
   cookie:
