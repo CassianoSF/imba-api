@@ -12,9 +12,6 @@ import {UserResolvers} from './resolvers/UserResolvers'
 import {User} from './models/User'
 
 var app = express()
-console.log process.cwd
-console.log process.cwd
-console.log process.cwd
 var schema = buildSchema fs.readFileSync("{__dirname}/schema.graphql", 'utf8')
 
 var root =
@@ -47,7 +44,7 @@ app.use session
 app.use '/', graphqlHTTP do |request|
   schema: schema
   rootValue: root
-  context: request
+  context: request && console.log(request:body)
   graphiql: true
 
 export const api = functions:https.onRequest(app)
